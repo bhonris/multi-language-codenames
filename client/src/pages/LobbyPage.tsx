@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function LobbyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefillCode: string = (location.state as any)?.joinCode ?? '';
   const [displayName, setDisplayName] = useState('');
   const [language, setLanguage] = useState<'en' | 'th' | 'mixed'>('en');
-  const [joinCode, setJoinCode] = useState('');
-  const [mode, setMode] = useState<'create' | 'join'>('create');
+  const [joinCode, setJoinCode] = useState(prefillCode);
+  const [mode, setMode] = useState<'create' | 'join'>(prefillCode ? 'join' : 'create');
   const [error, setError] = useState('');
 
   const handleCreate = async () => {
