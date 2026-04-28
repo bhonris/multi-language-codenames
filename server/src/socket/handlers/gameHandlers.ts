@@ -1,11 +1,10 @@
 import type { Server, Socket } from 'socket.io';
-import type { ServerToClientEvents, ClientToServerEvents, Card } from '@signal/shared';
+import type { ServerToClientEvents, ClientToServerEvents, Card, Team } from '@signal/shared';
 import { getRoom, touchRoom } from '../../rooms/roomManager.js';
 import { generateBoard } from '../../domain/boardGenerator.js';
 import { validateClue } from '../../domain/clueValidator.js';
 import { applyGuess, nextTeam } from '../../domain/turnManager.js';
 import { checkWin } from '../../domain/winCondition.js';
-import type { Team } from '@signal/shared';
 
 type AppSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 type AppServer = Server<ClientToServerEvents, ServerToClientEvents>;
@@ -22,23 +21,24 @@ export function registerGameHandlers(io: AppServer, socket: AppSocket): void {
     if (room.creatorId !== playerId) { socket.emit('error', 'NOT_CREATOR', 'Only the creator can start'); return; }
     if (room.game.phase !== 'lobby') { socket.emit('error', 'GAME_ALREADY_STARTED', 'Game already started'); return; }
 
-    const board = generateBoard(room.language);
+    const { board, firstTeam } = generateBoard(room.language);
     room.board = board;
-    const firstTeam: Team = Math.random() < 0.5 ? 'red' : 'blue';
+    const redRemaining = board.filter(c => c.color === 'red').length;
+    const blueRemaining = board.filter(c => c.color === 'blue').length;
     room.game = {
       phase: 'playing',
       activeTeam: firstTeam,
       guessesRemaining: null,
       currentClue: null,
-      redRemaining: board.filter(c => c.color === 'red').length,
-      blueRemaining: board.filter(c => c.color === 'blue').length,
+      redRemaining,
+      blueRemaining,
       winner: null,
       winReason: null,
       firstTeam,
     };
     touchRoom(roomCode);
 
-    io.to(roomCode).emit('game:started', operativeView(board));
+    io.to(roomCode).emit('game:started', operativeView(board), { redRemaining, blueRemaining, firstTeam });
     for (const [, player] of room.players) {
       if (player.role === 'handler' && player.socketId) {
         io.to(player.socketId).emit('game:handler-board', board);
@@ -59,10 +59,10 @@ export function registerGameHandlers(io: AppServer, socket: AppSocket): void {
     const validation = validateClue(word, room.board);
     if (!validation.valid) { socket.emit('error', validation.reason!, 'Invalid clue'); return; }
 
-    room.game.currentClue = { word: word.trim(), count, team: player.team };
+    room.game.currentClue = { word: word.trim(), count, team: player.team! };
     room.game.guessesRemaining = count === 0 ? null : count + 1;
     touchRoom(roomCode);
-    io.to(roomCode).emit('game:clue-submitted', word.trim(), count, player.team);
+    io.to(roomCode).emit('game:clue-submitted', word.trim(), count, player.team!);
   });
 
   socket.on('game:guess', (cardIndex: number) => {
@@ -140,22 +140,23 @@ export function registerGameHandlers(io: AppServer, socket: AppSocket): void {
     const room = getRoom(roomCode);
     if (!room) return;
     if (room.game.phase !== 'ended') { socket.emit('error', 'GAME_NOT_ENDED', 'Game still in progress'); return; }
-    const board = generateBoard(room.language);
+    const { board, firstTeam } = generateBoard(room.language);
     room.board = board;
-    const firstTeam: Team = Math.random() < 0.5 ? 'red' : 'blue';
+    const redRemaining = board.filter(c => c.color === 'red').length;
+    const blueRemaining = board.filter(c => c.color === 'blue').length;
     room.game = {
       phase: 'playing',
       activeTeam: firstTeam,
       guessesRemaining: null,
       currentClue: null,
-      redRemaining: board.filter(c => c.color === 'red').length,
-      blueRemaining: board.filter(c => c.color === 'blue').length,
+      redRemaining,
+      blueRemaining,
       winner: null,
       winReason: null,
       firstTeam,
     };
     touchRoom(roomCode);
-    io.to(roomCode).emit('game:started', operativeView(board));
+    io.to(roomCode).emit('game:started', operativeView(board), { redRemaining, blueRemaining, firstTeam });
     for (const [, player] of room.players) {
       if (player.role === 'handler' && player.socketId) {
         io.to(player.socketId).emit('game:handler-board', board);

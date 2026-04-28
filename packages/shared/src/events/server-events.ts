@@ -1,4 +1,4 @@
-import type { Team } from '../types/game.js';
+import type { Team, GameStartState } from '../types/game.js';
 import type { Player } from '../types/player.js';
 import type { Card, CardColor, CardPublic } from '../types/card.js';
 import type { ChatMessage } from '../types/chat.js';
@@ -10,7 +10,7 @@ export interface ServerToClientEvents {
   'room:player-left': (playerId: string) => void;
   'room:player-updated': (player: Player) => void;
   'room:language-changed': (language: import('../types/game.js').Language) => void;
-  'game:started': (board: CardPublic[]) => void;
+  'game:started': (board: CardPublic[], state: GameStartState) => void;
   'game:handler-board': (board: Card[]) => void;
   'game:clue-submitted': (word: string, count: number, team: Team) => void;
   'game:card-revealed': (cardIndex: number, color: CardColor, word: string) => void;

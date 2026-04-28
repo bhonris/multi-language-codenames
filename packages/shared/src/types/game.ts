@@ -5,6 +5,12 @@ export type Role = 'handler' | 'operative';
 export type GamePhase = 'lobby' | 'playing' | 'ended';
 export type Language = 'en' | 'th' | 'mixed';
 
+export interface GameStartState {
+  redRemaining: number;
+  blueRemaining: number;
+  firstTeam: Team;
+}
+
 export interface ClueRecord {
   word: string;
   count: number;

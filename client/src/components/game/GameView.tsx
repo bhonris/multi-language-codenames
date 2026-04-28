@@ -1,24 +1,27 @@
 import { useGameStore } from '../../store/gameStore.js';
 import Board from './Board.js';
 import CluePanel from './CluePanel.js';
-import ChatPanel from '../chat/ChatPanel.js';
 import GameOverOverlay from './GameOverOverlay.js';
 import ScoreBar from './ScoreBar.js';
+import Sidebar from './Sidebar.js';
 
 export default function GameView() {
   const game = useGameStore(s => s.game);
   const gamePaused = useGameStore(s => s.gamePaused);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-4 p-4 relative">
-      <div className="flex-1 flex flex-col gap-4">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col lg:flex-row gap-3 p-3 bg-slate-900 relative">
+      {/* Main game column */}
+      <div className="flex-1 lg:min-h-0 flex flex-col gap-3">
         <ScoreBar />
-        <Board />
+        {/* Board fills remaining space on desktop, natural aspect on mobile */}
+        <div className="flex-1 lg:min-h-0">
+          <Board />
+        </div>
         <CluePanel />
       </div>
-      <div className="lg:w-72 w-full">
-        <ChatPanel />
-      </div>
+      {/* Sidebar: chat + history */}
+      <Sidebar />
       {game?.phase === 'ended' && <GameOverOverlay />}
       {gamePaused && (
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50">

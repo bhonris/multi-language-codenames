@@ -197,11 +197,15 @@ describe('socket: game:start', () => {
     const startedO = waitFor<any>(operative, 'game:started');
     const handlerBoard = waitFor<any>(handler, 'game:handler-board');
     handler.emit('game:start');
-    const [boardH, boardO, fullBoard] = await Promise.all([startedH, startedO, handlerBoard]);
+    const [[boardH, stateH], [boardO], fullBoard] = await Promise.all([startedH, startedO, handlerBoard]);
 
     expect(boardH).toHaveLength(25);
     expect(boardO).toHaveLength(25);
     expect(fullBoard.every((c: any) => c.color !== null)).toBe(true);
+    expect(stateH.redRemaining + stateH.blueRemaining).toBe(17);
+    // The firstTeam must have exactly 9 cards
+    const firstTeamCount = fullBoard.filter((c: any) => c.color === stateH.firstTeam).length;
+    expect(firstTeamCount).toBe(9);
 
     handler.disconnect();
     operative.disconnect();
@@ -401,8 +405,9 @@ describe('socket: game:rematch', () => {
 
     const startedP = waitFor<any>(activeHandler, 'game:started');
     activeHandler.emit('game:rematch');
-    const board = await startedP;
+    const [board, state] = await startedP;
     expect(board).toHaveLength(25);
+    expect(state.redRemaining + state.blueRemaining).toBe(17);
     allClients.forEach(c => c.disconnect());
   });
 });
