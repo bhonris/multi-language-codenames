@@ -23,4 +23,5 @@ export interface RoomSnapshot {
   board: Card[];
   chatHistory: ChatMessage[];
   isCreator: boolean;
+  myPlayerId: string;
 }

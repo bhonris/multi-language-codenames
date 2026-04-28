@@ -8,7 +8,6 @@ type AppSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 type AppServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
 function buildSnapshot(room: ReturnType<typeof getRoom>!, playerId: string) {
-  const player = room.players.get(playerId)!;
   return {
     code: room.code,
     language: room.language,
@@ -17,6 +16,7 @@ function buildSnapshot(room: ReturnType<typeof getRoom>!, playerId: string) {
     board: room.board,
     chatHistory: room.chatHistory,
     isCreator: room.creatorId === playerId,
+    myPlayerId: playerId,
   };
 }
 

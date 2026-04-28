@@ -11,7 +11,8 @@ export function registerSocketHandlers() {
   const store = useGameStore.getState;
 
   socket.on('room:state', (snapshot) => {
-    if (_playerId) store().setRoomSnapshot(snapshot, _playerId);
+    setPlayerId(snapshot.myPlayerId);
+    store().setRoomSnapshot(snapshot, snapshot.myPlayerId);
   });
   socket.on('room:player-joined', (player) => store().addPlayer(player));
   socket.on('room:player-left', (playerId) => store().removePlayer(playerId));

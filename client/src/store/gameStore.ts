@@ -76,7 +76,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     players: s.players.map(p => p.id === playerId ? { ...p, connected: false } : p),
   })),
 
-  setOperativeBoard: (board) => set({ board }),
+  setOperativeBoard: (board) => set(s => ({ board, game: s.game ? { ...s.game, phase: 'playing' } : null })),
   setHandlerBoard: (board) => set({ handlerBoard: board }),
 
   revealCard: (cardIndex, color) => set(s => ({
