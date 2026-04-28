@@ -49,10 +49,24 @@ export default function LobbyView() {
       )}
 
       {isCreator && (
-        <button onClick={handleStart} disabled={!canStart}
-          className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors text-lg">
-          Start Game
-        </button>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 text-sm">Language:</span>
+            <select
+              value={language ?? 'en'}
+              onChange={e => socket.emit('room:set-language', e.target.value as 'en' | 'th' | 'mixed')}
+              className="bg-slate-700 text-white rounded-lg px-3 py-1 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+            >
+              <option value="en">English</option>
+              <option value="th">Thai</option>
+              <option value="mixed">Mixed (EN + TH)</option>
+            </select>
+          </div>
+          <button onClick={handleStart} disabled={!canStart}
+            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors text-lg">
+            Start Game
+          </button>
+        </div>
       )}
     </div>
   );

@@ -11,6 +11,7 @@ export function addPlayer(room: Room, displayName: string, socketId: string): Pl
     role: 'operative',
     connected: true,
     socketId,
+    disconnectTimer: null,
   };
   room.players.set(player.id, player);
   return player;

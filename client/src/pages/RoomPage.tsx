@@ -19,9 +19,10 @@ export default function RoomPage() {
     }
 
     const displayName = sessionStorage.getItem('displayName') ?? 'Player';
+    const playerSecret = sessionStorage.getItem(`signal-secret-${code}`) ?? undefined;
 
     const onConnect = () => {
-      socket.emit('player:join', { roomCode: code, displayName });
+      socket.emit('player:join', { roomCode: code, displayName, playerSecret });
     };
 
     socket.once('connect', onConnect);

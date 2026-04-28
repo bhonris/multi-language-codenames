@@ -1,8 +1,8 @@
 phase: time-leap-development
-leap_count: 3
+leap_count: 4
 expansion_cycle: 1
-session_id: 2026-04-28T16:12:00Z
-prev_head: 659299736526faa35ff9f4e9d580453a60efda25
+session_id: 2026-04-28T16:20:00Z
+prev_head: 4ab1392db1d029149db7df781f35e625f0215a5b
 original_prompt: "build an online version of Code Names but with multiple language support. Start with english and thai"
 project_name: "codenames_online"
 project_type: web
@@ -11,11 +11,11 @@ test_cmd: pnpm test
 dev_server_port: 5173
 coverage_pct: 97
 divergence_readings: []
-current_focus: "Phase 3b complete — full game flow browser-verified; next: check remaining acceptance criteria"
+current_focus: "Language selector, reconnect/grace, and game pause implemented; verify remaining AC items"
 blocked_on: null
-last_test_run: "76 pass, 0 fail"
+last_test_run: "81 pass, 0 fail"
 closed_worldlines: [divergence-analysis, worldline-selection]
-next_action: "read documents/steiner-spec.md and check remaining unchecked acceptance criteria; implement any missing features"
+next_action: "verify all acceptance criteria from spec are met; check shareable URL join flow; test Thai font rendering"
 sern_interference_count: 0
 mayuri_rework_count: 0
 decisions:
@@ -34,6 +34,8 @@ review_items:
     - "myPlayerId-mismatch: socket UUID != REST UUID — server now includes myPlayerId in room:state snapshot"
     - "strictmode-double-join: React StrictMode fires useEffect twice — fixed with socket.once('connect') + cleanup"
     - "phase-not-transitioning: game:started didn't update game.phase — setOperativeBoard now sets phase=playing"
+    - "language-selector-lobby: creator can now change language in lobby via room:set-language event"
+    - "reconnect-grace: playerSecret stored in sessionStorage; 60s grace window; game:paused when <2 connected"
 max_iterations: 30
 push_to_github: false
 bypass_playwright: false
@@ -46,3 +48,5 @@ lessons_learned:
   - "cycle 2: server must include myPlayerId in room:state so client knows which player UUID is theirs"
   - "cycle 2: React StrictMode double-fires useEffect in dev — use socket.once('connect') not socket.on to avoid double player:join"
   - "cycle 2: Zustand store phase must be updated by client event handlers, not just initial snapshot"
+  - "cycle 3: PlayerRecord.secret was already generated; just needed to thread it through snapshot and join handler for reconnect"
+  - "cycle 3: game:paused must be emitted on both new-player-join AND reconnect paths when count crosses the 2-player threshold"

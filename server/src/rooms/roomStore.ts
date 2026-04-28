@@ -10,6 +10,7 @@ export interface PlayerRecord {
   role: 'handler' | 'operative';
   connected: boolean;
   socketId: string | null;
+  disconnectTimer: ReturnType<typeof setTimeout> | null;
 }
 
 export interface Room {

@@ -15,6 +15,7 @@ interface GameStore {
   chatMessages: ChatMessage[];
   myRole: 'handler' | 'operative';
   myTeam: Team | null;
+  gamePaused: boolean;
 
   setRoomSnapshot: (snapshot: {
     code: string; language: Language; players: Player[]; game: GameState; board: Card[]; chatHistory: ChatMessage[]; isCreator: boolean;
@@ -29,6 +30,8 @@ interface GameStore {
   setClue: (word: string, count: number, team: Team) => void;
   setGameOver: (winner: Team, reason: 'cards-cleared' | 'traitor-hit') => void;
   addChatMessage: (msg: ChatMessage) => void;
+  setLanguage: (language: Language) => void;
+  setGamePaused: (paused: boolean) => void;
   reset: () => void;
 }
 
@@ -44,6 +47,7 @@ const initialState = {
   chatMessages: [],
   myRole: 'operative' as const,
   myTeam: null,
+  gamePaused: false,
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -104,6 +108,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
   })),
 
   addChatMessage: (msg) => set(s => ({ chatMessages: [...s.chatMessages, msg] })),
+
+  setLanguage: (language) => set({ language }),
+  setGamePaused: (paused) => set({ gamePaused: paused }),
 
   reset: () => set(initialState),
 }));

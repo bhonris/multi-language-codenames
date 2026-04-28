@@ -2,6 +2,7 @@ export const GRID_SIZE = 25;
 export const ROOM_CODE_LENGTH = 6;
 export const ROOM_EXPIRY_MS = 30 * 60 * 1000;
 export const HANDLER_RECONNECT_TIMEOUT_MS = 60 * 1000;
+export const RECONNECT_GRACE_MS = 60 * 1000;
 export const CHAT_MAX_LENGTH = 200;
 export const ROOM_CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 export const FIRST_TEAM_CARDS = 9;

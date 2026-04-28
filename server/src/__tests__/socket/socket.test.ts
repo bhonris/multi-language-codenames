@@ -457,3 +457,102 @@ describe('socket: chat', () => {
     client2.disconnect();
   });
 });
+
+// ─── room:set-language ────────────────────────────────────────────────────────
+
+describe('socket: room:set-language', () => {
+  it('creator can change language in lobby', async () => {
+    const { roomCode } = await createRoom('en');
+    const creator = connectClient(port);
+    const observer = connectClient(port);
+    await joinRoom(creator, roomCode, 'Creator');
+    await joinRoom(observer, roomCode, 'Observer');
+
+    const changedP = waitFor<any>(observer, 'room:language-changed');
+    creator.emit('room:set-language', 'th');
+    const lang = await changedP;
+    expect(lang).toBe('th');
+
+    creator.disconnect();
+    observer.disconnect();
+  });
+
+  it('non-creator cannot change language', async () => {
+    const { roomCode } = await createRoom('en');
+    const creator = connectClient(port);
+    const other = connectClient(port);
+    await joinRoom(creator, roomCode, 'Creator');
+    await joinRoom(other, roomCode, 'Other');
+
+    let changed = false;
+    creator.on('room:language-changed', () => { changed = true; });
+    other.emit('room:set-language', 'th');
+    await new Promise(r => setTimeout(r, 80));
+    expect(changed).toBe(false);
+
+    creator.disconnect();
+    other.disconnect();
+  });
+});
+
+// ─── reconnect ───────────────────────────────────────────────────────────────
+
+describe('socket: reconnect via playerSecret', () => {
+  it('restores player to same id when reconnecting with secret', async () => {
+    const { roomCode } = await createRoom();
+    const client = connectClient(port);
+    const state = await joinRoom(client, roomCode, 'Alice');
+    const { myPlayerId, myPlayerSecret } = state;
+
+    client.disconnect();
+    await new Promise(r => setTimeout(r, 50));
+
+    const newClient = connectClient(port);
+    const reconnectStateP = waitFor<any>(newClient, 'room:state');
+    newClient.connect();
+    newClient.emit('player:join', { roomCode, displayName: 'Alice', playerSecret: myPlayerSecret });
+    const reconnectState = await reconnectStateP;
+
+    expect(reconnectState.myPlayerId).toBe(myPlayerId);
+    newClient.disconnect();
+  });
+
+  it('emits game:paused when connected count drops below 2 during playing', async () => {
+    const { roomCode } = await createRoom();
+    const { activeHandler, activeOp, inactiveHandler, inactiveOp, allClients } = await setupAndStartGame(roomCode);
+
+    const pausedP = waitFor<boolean>(activeHandler, 'game:paused');
+    // disconnect 3 players so only 1 remains
+    activeOp.disconnect();
+    inactiveHandler.disconnect();
+    inactiveOp.disconnect();
+    const paused = await pausedP;
+    expect(paused).toBe(true);
+
+    activeHandler.disconnect();
+    for (const c of allClients) { try { c.disconnect(); } catch {} }
+  });
+
+  it('emits game:paused false when a new player joins and count reaches 2', async () => {
+    const { roomCode } = await createRoom();
+    const { activeHandler, activeOp, inactiveHandler, inactiveOp, allClients } = await setupAndStartGame(roomCode);
+
+    // Disconnect 3 players so game pauses
+    const pausedP = waitFor<boolean>(activeHandler, 'game:paused');
+    activeOp.disconnect();
+    inactiveHandler.disconnect();
+    inactiveOp.disconnect();
+    await pausedP;
+
+    // Join a new player to bring connected count to 2 → game resumes
+    const rejoiner = connectClient(port);
+    const resumedP = waitFor<boolean>(activeHandler, 'game:paused');
+    joinRoom(rejoiner, roomCode, 'NewPlayer');
+    const resumed = await resumedP;
+    expect(resumed).toBe(false);
+
+    activeHandler.disconnect();
+    rejoiner.disconnect();
+    for (const c of allClients) { try { c.disconnect(); } catch {} }
+  });
+});
