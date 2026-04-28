@@ -106,20 +106,20 @@ Secondary differentiators:
 
 ## 4. Acceptance Criteria
 
-- [ ] A player can create a room and receive a 6-character alphanumeric room code that, when entered by another player, places both in the same game session.
-- [ ] The language selector offers exactly three options — English, Thai, Mixed — and is only changeable by the room creator before the game starts; changing it after game start is disabled.
-- [ ] In Mixed mode, the 25-card board contains at least 5 Thai words and at least 5 English words drawn from their respective word lists; the exact split is randomized per game.
-- [ ] Thai words on cards render in Noto Sans Thai or Sarabun font at a size readable at 1280×800 viewport without overflow or clipping.
-- [ ] Exactly one player per team is designated Handler; that player's board view shows all 25 card color assignments overlaid on card text before any cards are revealed; Operative views show no color overlay on unrevealed cards.
-- [ ] The TRAITOR card renders with the text "TRAITOR"; clicking it triggers an immediate game-over event that declares the opposing team the winner within 500 ms of the click (measured by the Socket.IO event reaching all connected clients).
-- [ ] The Handler clue input field rejects (with an inline validation message) any submission where the clue word exactly matches (case-insensitive) any word currently on the board, including Thai words matched in their normalized form.
-- [ ] An Operative can click "Pass Turn" at any time during their team's guessing phase; clicking it immediately ends the team's turn and switches active team, regardless of how many guesses remain.
-- [ ] In-game text chat messages are broadcast to all clients in the room within 200 ms of submission under normal network conditions; messages persist for the duration of the room session.
-- [ ] Clicking "Rematch" deals a new randomized 25-card board with fresh color assignments without disconnecting any player from the room; player names and team assignments are preserved.
-- [ ] When a player disconnects and the room has fewer than 2 connected players, the game is paused (input disabled) and a "Waiting for players..." banner is shown; if the player reconnects within 60 seconds, the game resumes from the same state.
-- [ ] The shareable room URL resolves directly to the join flow without requiring navigation; opening the URL in a new browser tab lands a user at the name-entry screen for that room code.
-- [ ] Red team wins when all Red cards are revealed; Blue team wins when all Blue cards are revealed; each win condition is evaluated server-side after every card flip event and cannot be spoofed by a client.
-- [ ] The game board layout is a 5-column CSS Grid; on viewports 768 px wide and above, all 25 cards are visible simultaneously without horizontal scrolling.
+- [x] A player can create a room and receive a 6-character alphanumeric room code that, when entered by another player, places both in the same game session.
+- [x] The language selector offers exactly three options — English, Thai, Mixed — and is only changeable by the room creator before the game starts; changing it after game start is disabled.
+- [x] In Mixed mode, the 25-card board contains at least 5 Thai words and at least 5 English words drawn from their respective word lists; the exact split is randomized per game.
+- [x] Thai words on cards render in Noto Sans Thai or Sarabun font at a size readable at 1280×800 viewport without overflow or clipping.
+- [x] Exactly one player per team is designated Handler; that player's board view shows all 25 card color assignments overlaid on card text before any cards are revealed; Operative views show no color overlay on unrevealed cards.
+- [x] The TRAITOR card renders with the text "TRAITOR"; clicking it triggers an immediate game-over event that declares the opposing team the winner within 500 ms of the click (measured by the Socket.IO event reaching all connected clients).
+- [x] The Handler clue input field rejects (with an inline validation message) any submission where the clue word exactly matches (case-insensitive) any word currently on the board, including Thai words matched in their normalized form.
+- [x] An Operative can click "Pass Turn" at any time during their team's guessing phase; clicking it immediately ends the team's turn and switches active team, regardless of how many guesses remain.
+- [x] In-game text chat messages are broadcast to all clients in the room within 200 ms of submission under normal network conditions; messages persist for the duration of the room session.
+- [x] Clicking "Rematch" deals a new randomized 25-card board with fresh color assignments without disconnecting any player from the room; player names and team assignments are preserved.
+- [x] When a player disconnects and the room has fewer than 2 connected players, the game is paused (input disabled) and a "Waiting for players..." banner is shown; if the player reconnects within 60 seconds, the game resumes from the same state.
+- [x] The shareable room URL resolves directly to the join flow without requiring navigation; opening the URL in a new browser tab lands a user at the name-entry screen for that room code.
+- [x] Red team wins when all Red cards are revealed; Blue team wins when all Blue cards are revealed; each win condition is evaluated server-side after every card flip event and cannot be spoofed by a client.
+- [x] The game board layout is a 5-column CSS Grid; on viewports 768 px wide and above, all 25 cards are visible simultaneously without horizontal scrolling.
 
 ---
 
