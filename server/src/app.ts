@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import { existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { getRoom, createRoom } from './rooms/roomManager.js';
 import { randomUUID } from 'node:crypto';
 import type { Language } from '@signal/shared';
@@ -41,6 +44,13 @@ export function createApp() {
       gamePhase: room.game.phase,
     });
   });
+
+  // Serve built client for production/LAN single-port deploy
+  const clientDist = join(dirname(fileURLToPath(import.meta.url)), '../../client/dist');
+  if (existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+    app.get('*', (_req, res) => res.sendFile(join(clientDist, 'index.html')));
+  }
 
   return app;
 }
